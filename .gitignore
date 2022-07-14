@@ -1,2 +1,6 @@
 a.out
 duvidas.md
+.vscode/*
+build/*
+test.in
+test.out
