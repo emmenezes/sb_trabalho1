@@ -33,8 +33,12 @@ Responsabilidades:
 ## Preprocessor
 
 Responsabilidades:
-* Procura diretivas de pré-processamento antes da Seção Texto
-    * EQU e IF
+* Procura diretivas de pré-processamento.
+    * EQU: Substituir todas as aparições dos identificadores. Vem antes da seção texto.
+    * IF: adicionar novos comandos para a seção texto se preciso. Vem depois na seção texto.
+
+Obs:
+É garantido que não há erros de pré-processamento!
 
 ## Assembler
 
@@ -54,3 +58,4 @@ Classes:
 
 * [Guia de estilo de C++](https://google.github.io/styleguide/cppguide.html)
 * [Regex](https://cplusplus.com/reference/regex/)
+* [Fstream](https://cplusplus.com/reference/fstream/fstream/)
