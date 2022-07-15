@@ -32,6 +32,13 @@ Responsabilidades:
 
 ## Preprocessor
 
+Funções:
+* PreProcessing
+* CreateTokenMatrix
+* FindEQU
+* ProcessIF
+* ConvertMatrixToFile
+
 Responsabilidades:
 * Procura diretivas de pré-processamento.
     * EQU: Substituir todas as aparições dos identificadores. Vem antes da seção texto.
