@@ -1,4 +1,5 @@
 #include "include/datatypes.hpp"
+#include "include/preprocessor.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -13,8 +14,6 @@
 
 using namespace std;
 
-bool CheckFlag(char processing_type);
-
 int main (int argc, char** argv){
     if (argc != 5){
         cout << "Quantidade de argumentos invalida ("<< argc <<"),\ninsira no programa -diretiva nomedoprograma.asm nomedasaida.obj" << endl;
@@ -27,18 +26,18 @@ int main (int argc, char** argv){
         return 0;
     }
 
-    fileData * input = new fileData{ .name=argv[2], .content=""};
-    fileData * output = new fileData{ .name=argv[3], .content=""};
+    fileData * input_file = new fileData{ .name=argv[2]};
+    fileData * output_file = new fileData{ .name=argv[3]};
     
     ifstream ifs(argv[2]);
     stringstream buffer;
-    buffer << ifs.rdbuf();
+    input_file->content << ifs.rdbuf();
 
-    input->content = buffer.str();
+    if (processing_type == 'p'){
+        PreProcessing(input_file, output_file);
+    }
 
-    cout << input->content;
-
-    ofstream ofs (output->name);
-    ofs << input->content;
+    ofstream ofs (output_file->name);
+    ofs << (output_file->content).str();
     ofs.close();
 }
