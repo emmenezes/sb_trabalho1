@@ -3,15 +3,7 @@
 
 ## Datatypes
 
-Classes:
-
-* RawToken
-    * Symbol
-    * Location
-* RawLine
-    * vector &lt;Rawtoken>
-* RawFile
-    * vector &lt;Rawline>
+Structs:
 
 * ObjectCode
 * UseTable
@@ -27,6 +19,10 @@ Responsabilidades:
 * Retira comentários
 * Torna toda as letras maiúsculas
 * Confere se há tokens inválidos (iniciados em número)
+
+Erros que identifica:
+
+
 
 ## Parser
 

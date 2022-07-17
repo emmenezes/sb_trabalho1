@@ -1,12 +1,11 @@
 #include "../include/preprocessor.hpp"
-#include <string>
 
 void PreProcessing(fileData * input_file, fileData * outuput_file){
-    std::map<const char*, std::string> * equ_map;
+    std::map<std::string, std::string> * equ_map = new std::map<std::string, std::string>();
     tokenMatrix * input_matrix = new tokenMatrix{ .lines = 0};
     tokenMatrix * output_matrix = new tokenMatrix{ .lines = 0};
 
-    CreateTokenMatrix(input_file, input_matrix);
+    ConvertFileToMatrix(input_file, input_matrix);
     if (!FindEQU(input_matrix, equ_map)){
         ConvertMatrixToFile(input_matrix, outuput_file);
         return;
@@ -14,41 +13,59 @@ void PreProcessing(fileData * input_file, fileData * outuput_file){
 
     ProcessIF(input_matrix, output_matrix, equ_map);
     ConvertMatrixToFile(output_matrix, outuput_file);
-
 }
 
-// TODO: Talvez eu devesse passar essa função para datatypes para ser reutilizada na tradução
-// TODO: Reformular essa função para usar regex
-// Cuidados que fileData.content é stringstream, mas pode ser string, precisa mexer na struct
-void CreateTokenMatrix(fileData * input_file, tokenMatrix * input_matrix){
-    int lines = 0;
-    std::string temp;
-    std::stringstream temp_ss;
-    std::string temp_token;
-    std::vector<std::string> matrix_line;
-
-    getline(input_file->content, temp);
-    do{
-        matrix_line = {};
-        temp_ss.str(temp);
-        getline(temp_ss, temp_token, ' ');
-        // TODO: temp_ss não está sendo atualizado mesmo que temp esteja
-        // O processo de salvar a matrix dá certo
-        do {
-            matrix_line.push_back(temp_token);
-        } while (getline(temp_ss, temp_token, ' '));
-        input_matrix->matrix.push_back(matrix_line);
-        lines++;
-    } while(getline(input_file->content, temp));
-    input_matrix->lines = lines;
+bool FindEQU(tokenMatrix * input_matrix, std::map<std::string, std::string> * equ_map){
+    std::vector<std::string> line;
+    line = input_matrix->matrix[0];
+    bool equ_exists = false;
+    for (int i = 0; i < input_matrix->lines; i++){
+        line = input_matrix->matrix[i];
+        if (line[0] == "SECAO")
+            break;
+        if (line[0][0] == ';')
+            continue;
+        (*equ_map)[line[0].substr(0, line[0].size()-1)] = line[2];
+        equ_exists = true;
+    }
+    if (equ_exists)
+        return 1;
+    else
+        return 0;
 }
 
-bool FindEQU(tokenMatrix * input_matrix, std::map<const char*, std::string> * equ_amp){
-    return 1;
-}
-void ProcessIF(tokenMatrix * input_matrix, tokenMatrix * output_matrix, std::map<const char*, std::string> * equ_map){
+void ProcessIF(tokenMatrix * input_matrix, tokenMatrix * output_matrix, std::map<std::string, std::string> * equ_map){
+    std::vector<std::string> input_line;
+    std::vector<std::string> output_line;
+    std::map<std::string, std::string>::iterator it;
 
-}
-void ConvertMatrixToFile(tokenMatrix * output_matrix, fileData * output_file){
-
+    for (int i = 0; i < input_matrix->lines; i++){
+        input_line = input_matrix->matrix[i];
+        output_line = {};
+        if (input_line[1] == "EQU")
+            continue;
+        for (int j = 0; j < input_line.size(); j++){
+            if (input_line[j][0] == ';'){
+                for (j; j<input_line.size(); j++){
+                    output_line.push_back(input_line[j]);    
+                }
+                break;
+            }
+            it = (*equ_map).find(input_line[j]);
+            if (it == (*equ_map).end()){
+                output_line.push_back(input_line[j]);
+            } else {
+                // 2 casos: IF e apenas substituição
+                if (input_line[0] == "IF"){
+                    output_line.pop_back();
+                    if (it->second == "0")
+                        i++;
+                } else {
+                    output_line.push_back(it->second);
+                }
+            }
+        }
+        if (output_line.size() != 0)
+            output_matrix->matrix.push_back(output_line);
+    }
 }

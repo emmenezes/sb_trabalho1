@@ -15,7 +15,7 @@
 using namespace std;
 
 int main (int argc, char** argv){
-    if (argc != 5){
+    if (argc != 4){
         cout << "Quantidade de argumentos invalida ("<< argc <<"),\ninsira no programa -diretiva nomedoprograma.asm nomedasaida.obj" << endl;
         return 0;
     }
@@ -31,13 +31,16 @@ int main (int argc, char** argv){
     
     ifstream ifs(argv[2]);
     stringstream buffer;
-    input_file->content << ifs.rdbuf();
+    buffer << ifs.rdbuf();
+    input_file->content = buffer.str();
 
     if (processing_type == 'p'){
         PreProcessing(input_file, output_file);
+    } else if (processing_type == 'o') {
+        
     }
 
     ofstream ofs (output_file->name);
-    ofs << (output_file->content).str();
+    ofs << output_file->content;
     ofs.close();
 }
