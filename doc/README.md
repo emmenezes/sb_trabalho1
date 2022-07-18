@@ -5,35 +5,40 @@
 
 Structs:
 
-* ObjectCode
-* UseTable
-* DefTable
+* fileData
+* tokenMatrix
+* equIdentifier
 
+Funções:
+* ConvertFileToMatrix
+* ConvertMatrixToFile
 
 ## Scanner
 
+Funções:
+* CleanMatrix
+* LexicCheckMatrix
+
 Responsabilidades:
-* Processar o arquivo inicial linha a linha
-* Retirar espaçamentos, pula linha 
-* Separa em tokens
 * Retira comentários
-* Torna toda as letras maiúsculas
 * Confere se há tokens inválidos (iniciados em número)
 
 Erros que identifica:
-
+* Tokens inválidos
+    * Token que começa com letra
 
 
 ## Parser
+
+Responsabilidades:
+
 
 ## Preprocessor
 
 Funções:
 * PreProcessing
-* CreateTokenMatrix
 * FindEQU
 * ProcessIF
-* ConvertMatrixToFile
 
 Responsabilidades:
 * Procura diretivas de pré-processamento.
@@ -49,12 +54,9 @@ Obs:
 
 ## Error
 
-Classes:
+Struct:
 
-* Erro
-    * Tipo
-    * Mensagem
-    * Localização
+* Erro {tipo, mensagem, localização}
 
 
 # Referências

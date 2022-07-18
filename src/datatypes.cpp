@@ -20,6 +20,10 @@ void ConvertMatrixToFile(tokenMatrix * output_matrix, fileData * output_file){
     std::vector <std::string> matrix_line;
     for (int i = 0; i < output_matrix->matrix.size(); i++){
         matrix_line = output_matrix->matrix[i];
+        if (matrix_line.size() == 0){
+            text.append("\n");
+            continue;    
+        }
         for (int j = 0; j < matrix_line.size(); j++){
             text.append(matrix_line[j]);
             text.append(" ");

@@ -5,7 +5,7 @@
 
 struct compilationError {
     std::string type;
-    std::string mensagem;
+    std::string message;
     int line; 
 };
 

@@ -1,5 +1,6 @@
 #include "include/datatypes.hpp"
 #include "include/preprocessor.hpp"
+#include "include/translator.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -37,7 +38,7 @@ int main (int argc, char** argv){
     if (processing_type == 'p'){
         PreProcessing(input_file, output_file);
     } else if (processing_type == 'o') {
-        
+        Translator(input_file, output_file);
     }
 
     ofstream ofs (output_file->name);
