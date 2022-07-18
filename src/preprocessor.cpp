@@ -21,7 +21,9 @@ bool FindEQU(tokenMatrix * input_matrix, std::map<std::string, std::string> * eq
     bool equ_exists = false;
     for (int i = 0; i < input_matrix->lines; i++){
         line = input_matrix->matrix[i];
-        if (line[0] == "SECAO")
+        if (line.empty())
+            continue;
+        if (line[1] != "EQU")
             break;
         if (line[0][0] == ';')
             continue;
@@ -42,8 +44,10 @@ void ProcessIF(tokenMatrix * input_matrix, tokenMatrix * output_matrix, std::map
     for (int i = 0; i < input_matrix->lines; i++){
         input_line = input_matrix->matrix[i];
         output_line = {};
-        if (input_line[1] == "EQU")
+        if (input_line[1] == "EQU"){
+            output_matrix->matrix.push_back({});            
             continue;
+        }
         for (int j = 0; j < input_line.size(); j++){
             if (input_line[j][0] == ';'){
                 for (j; j<input_line.size(); j++){
@@ -58,14 +62,15 @@ void ProcessIF(tokenMatrix * input_matrix, tokenMatrix * output_matrix, std::map
                 // 2 casos: IF e apenas substituição
                 if (input_line[0] == "IF"){
                     output_line.pop_back();
-                    if (it->second == "0")
+                    if (it->second == "0"){
+                        output_matrix->matrix.push_back(output_line);
                         i++;
+                    }
                 } else {
                     output_line.push_back(it->second);
                 }
             }
         }
-        if (output_line.size() != 0)
-            output_matrix->matrix.push_back(output_line);
+        output_matrix->matrix.push_back(output_line);
     }
 }
