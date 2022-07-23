@@ -1,6 +1,7 @@
 secao texto
 M1:
 M2:
+M3:
 input k
 load k
 jmpz m2
