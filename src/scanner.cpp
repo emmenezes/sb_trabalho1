@@ -23,6 +23,8 @@ void CleanMatrix(tokenMatrix * input_matrix){
 // Confere se todos os tokens não começam com número
 void LexicCheck(tokenMatrix * input_matrix, std::vector<compilationError> * error_list){
     std::vector<std::string> matrix_line;
+    std::string token;
+    bool is_number = true;
     compilationError error;
     error.type = "Lexico";
     error.message = "Token invalido";
@@ -31,8 +33,18 @@ void LexicCheck(tokenMatrix * input_matrix, std::vector<compilationError> * erro
         matrix_line = input_matrix->matrix[i];
         for (int j = 0; j < matrix_line.size(); j++){
             if (isdigit(matrix_line[j][0])){
-                error.line = i;
-                error_list->push_back(error);
+                token = matrix_line[j];
+                is_number = true;
+                for (int k = 0; k < token.size(); k++){
+                    if (!isdigit(token[k])){
+                        is_number = false;
+                        break;
+                    }
+                }
+                if (!is_number){
+                    error.line = i;
+                    error_list->push_back(error);
+                }
             }
         }
     }
