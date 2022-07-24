@@ -16,17 +16,22 @@ void Translator(fileData * input_file, fileData * outuput_file){
     CheckSequentialIdentifiers(input_matrix, error_list);
     CheckOperations(input_matrix, error_list);
 
-    // Análise semântica
-    CheckSections(input_matrix, error_list);
-    CheckOperationSection(input_matrix, error_list);
-    CheckSymbols(input_matrix, error_list, symbol_map);
-
-    // Gerador de código
-    if (IsModule(input_matrix)){
-        GenerateModuleProgram(input_matrix, symbol_map, outuput_file);
-    } else {
-        GenerateCodeProgram(input_matrix, symbol_map, outuput_file);
+    for (int i = 0; i < (*error_list).size(); i++){
+        compilationError e = (*error_list)[i];
+        std::cout << e.line << "  " << e.type << "  " << e.message << std::endl;
     }
+
+    // // Análise semântica
+    // CheckSections(input_matrix, error_list);
+    // CheckOperationSection(input_matrix, error_list);
+    // CheckSymbols(input_matrix, error_list, symbol_map);
+
+    // // Gerador de código
+    // if (IsModule(input_matrix)){
+    //     GenerateModuleProgram(input_matrix, symbol_map, outuput_file);
+    // } else {
+    //     GenerateCodeProgram(input_matrix, symbol_map, outuput_file);
+    // }
 
 }
 

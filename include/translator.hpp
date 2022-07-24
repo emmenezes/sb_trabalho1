@@ -5,6 +5,7 @@
 #include "error.hpp"
 #include "scanner.hpp"
 #include "parser.hpp"
+#include <iostream>
 
 void Translator(fileData * input_file, fileData * outuput_file);
 
