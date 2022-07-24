@@ -46,9 +46,14 @@ Responsabilidades:
     * IF: adicionar novos comandos para a seção texto se preciso. Vem depois na seção texto.
 
 Obs:
-É garantido que não há erros de pré-processamento!
+- É garantido que não há erros de pré-processamento!
 
-## Assembler
+## Translator
+
+Responsabilidades:
+
+Obs:
+- Em caso de códigos com erro e referências não encontradas, preencher o código de máquina com ??
 
 ## Linker
 
