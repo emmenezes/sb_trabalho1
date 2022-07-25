@@ -21,6 +21,10 @@ Para fazer:
 |-------------------|---|-----------|
 | test_sumab1 | O | Soma dois identificadores a + b |
 | test_sumab2 | O | Soma dois identificadores a + b e permite refazer soma |
+| test_binary | O | Calcula binário do valor de entrada  |
+| test_fibonacci | - |  |
+| test_ |  |  |
+| test_ |  |  |
 
 Obs:
 * Esses testes só podem ser marcados como feitos após o assembler estar completo
@@ -77,5 +81,5 @@ Obs:
 | Sintático | OK | Dois identificadores na mesma linha |
 | Semântico | OK | Falta da seção texto |
 | Semântico | OK | Instruções ou diretivas nas seções erradas |
-| Semântico | | Declarações de rótulos ausentes |
-| Semântico | | Declarações ou rótulos repetidos |
+| Semântico | OK | Declarações de rótulos ausentes |
+| Semântico | OK | Declarações ou rótulos repetidos |
