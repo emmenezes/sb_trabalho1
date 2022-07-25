@@ -1,7 +1,18 @@
 #include "../include/translator.hpp"
 
+std::map<std::string, char> op_type_map = {
+    // 't' para operação da seção texto
+    // 'd' para operação da seção dados
+    // 'c' para operação do cabeçalho
+    // Operações
+    {"ADD", 't'}, {"SUB", 't'}, {"MUL", 't'}, {"DIV", 't'}, {"JMP", 't'}, {"JMPN", 't'}, {"JMPP", 't'},{"JMPZ", 't'},
+    {"COPY", 't'}, {"LOAD", 't'}, {"STORE", 't'}, {"INPUT", 't'}, {"OUTPUT", 't'}, {"STOP", 't'}, 
+    // Diretivas
+    {"SPACE", 'd'}, {"CONST", 'd'}, {"BEGIN", 'c'}, {"END", 'd'}, {"EXTERN", 'c'}, {"PUBLIC", 'c'}
+};
+
 void Translator(fileData * input_file, fileData * outuput_file){
-    std::map<std::string, std::string> * symbol_map = new std::map<std::string, std::string>();
+    std::map<std::string, int> * symbol_map = new std::map<std::string, int>();
     std::vector <compilationError> * error_list = new std::vector <compilationError>();
 
     tokenMatrix * input_matrix = new tokenMatrix{ .lines = 0};
@@ -16,15 +27,14 @@ void Translator(fileData * input_file, fileData * outuput_file){
     CheckSequentialIdentifiers(input_matrix, error_list);
     CheckOperations(input_matrix, error_list);
 
+
+    // Análise semântica
+    CheckSections(input_matrix, error_list);
+    CheckSymbols(input_matrix, error_list, symbol_map);
     for (int i = 0; i < (*error_list).size(); i++){
         compilationError e = (*error_list)[i];
         std::cout << e.line << "  " << e.type << "  " << e.message << std::endl;
     }
-
-    // // Análise semântica
-    // CheckSections(input_matrix, error_list);
-    // CheckOperationSection(input_matrix, error_list);
-    // CheckSymbols(input_matrix, error_list, symbol_map);
 
     // // Gerador de código
     // if (IsModule(input_matrix)){
@@ -37,15 +47,134 @@ void Translator(fileData * input_file, fileData * outuput_file){
 
 // Analisador semântico
 void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_list){
+    std::vector<std::string> matrix_line;
+    std::map<std::string, char>::iterator it;
+    std::string op;
+    bool break_for = false;
+    bool is_section = false;
+    compilationError error;
+    error.type = "Semantico";
+    int i;
 
-}
-
-void CheckOperationSection(tokenMatrix * matrix, std::vector<compilationError> * error_list){
-
-}
-
-void CheckSymbols(tokenMatrix * matrix, std::vector<compilationError> * error_list, std::map<std::string, std::string> * symbol_map){
+    // Procura SECAO TEXTO
+    for (i = 0; i < matrix->lines; i++){
+        matrix_line = matrix->matrix[i];
+        for (int j = 0; j < matrix_line.size(); j++) {
+            if (matrix_line[j] == "SECAO"){
+                is_section = true;
+            } else if (is_section){
+                if (matrix_line[j] == "TEXTO") {
+                    matrix->matrix[i] = {};
+                } else{
+                    error.message = "Falta da secao texto";
+                    error.line = 0;
+                    error_list->push_back(error);
+                }
+                break_for = true;
+                break;
+            }
+        }
+        if (break_for)
+            break;
+    }
     
+    break_for = false;
+
+    // Confere SECAO TEXTO e procura SECAO DADOS
+    for (i; i < matrix->lines; i++){
+        matrix_line = matrix->matrix[i];
+        for (int j = 0; j < matrix_line.size(); j++) {
+            if (matrix_line[j] == "SECAO") 
+                continue;
+            if (matrix_line[j] == "DADOS") {
+                matrix->matrix[i] = {};
+                break_for = true;
+                break;
+            } else {
+                // Confere se não é rótulo, se for ignora
+                if (matrix_line[j][matrix_line[j].size()-1] != ':'){
+                    op = matrix_line[j];
+                    it = op_type_map.find(op);
+                    if (it == op_type_map.end()){
+                        error.message = "Operacao " + op + " nao identificada na secao TEXTO";
+                        error.line = i;
+                        error_list->push_back(error);
+                    } else {
+                        if (it->second != 't'){
+                            error.message = "Operacao " + op + " na secao TEXTO";
+                            error.line = i;
+                            error_list->push_back(error);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        if (break_for)
+            break;
+    }
+
+    // Confere SECAO DADOS
+    for (i; i < matrix->lines; i++){
+        matrix_line = matrix->matrix[i];
+        for (int j = 0; j < matrix_line.size(); j++) {
+            // Confere se não é rótulo, se for ignora
+            if (matrix_line[j][matrix_line[j].size()-1] != ':'){
+                op = matrix_line[j];
+                it = op_type_map.find(op);
+                if (it == op_type_map.end()){
+                    error.message = "Operacao " + op + " nao identificada na secao DADOS";
+                    error.line = i;
+                    error_list->push_back(error);
+                } else {
+                    if (it->second != 'd'){
+                        error.message = "Operacao " + op + " na secao DADOS";
+                        error.line = i;
+                        error_list->push_back(error);
+                    }
+                }
+                break;
+            }
+        }
+    }
+}
+
+void CheckSymbols(tokenMatrix * matrix, std::vector<compilationError> * error_list, std::map<std::string, int> * symbol_map){
+    std::vector<std::string> matrix_line;
+    std::map<std::string, int>::iterator it;
+    std::string token;
+    int pos_counter = 0;
+    bool symbol_exists = false;
+    compilationError error;
+    error.type = "Semantico";
+
+    for (int i = 0; i < matrix->lines; i++){
+        matrix_line = matrix->matrix[i];
+        for (int j = 0; j < matrix_line.size(); j++){
+            if (matrix_line[j][matrix_line[j].size()-1] == ':'){
+                token = matrix_line[j].substr(0, matrix_line[j].size()-1);
+                it = (*symbol_map).find(token);
+                if (it == (*symbol_map).end()){
+                    (*symbol_map)[token] = pos_counter;
+                } else {
+                    error.line = i;
+                    error.message = "Declaracao ou rotulo " + token + " repetido";
+                    error_list->push_back(error);
+                }
+                symbol_exists = true;
+            } else {
+                token = matrix_line[j];
+                it = op_args_map.find(token);
+                if (it != op_args_map.end()) {
+                    pos_counter += it->second + 1;
+                }
+                break;
+            }
+        }
+        if (symbol_exists)
+            matrix->matrix[i].erase(matrix->matrix[i].begin());
+        symbol_exists = false;
+    }
 }
 
 // Sintetizador

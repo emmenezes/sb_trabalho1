@@ -7,12 +7,13 @@
 #include "parser.hpp"
 #include <iostream>
 
+extern std::map<std::string, char> op_type_map;
+
 void Translator(fileData * input_file, fileData * outuput_file);
 
 // Analisador semântico
 void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_list);
-void CheckOperationSection(tokenMatrix * matrix, std::vector<compilationError> * error_list);
-void CheckSymbols(tokenMatrix * matrix, std::vector<compilationError> * error_list, std::map<std::string, std::string> * symbol_map);
+void CheckSymbols(tokenMatrix * matrix, std::vector<compilationError> * error_list, std::map<std::string, int> * symbol_map);
 
 // Sintetizador
 bool IsModule(tokenMatrix * matrix);
