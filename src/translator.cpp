@@ -4,7 +4,7 @@ std::map<std::string, char> op_type_map = {
     // 't' para operação da seção texto
     // 'd' para operação da seção dados
     // 'c' para operação do cabeçalho
-    // Operações
+    // Instruções
     {"ADD", 't'}, {"SUB", 't'}, {"MUL", 't'}, {"DIV", 't'}, {"JMP", 't'}, {"JMPN", 't'}, {"JMPP", 't'},{"JMPZ", 't'},
     {"COPY", 't'}, {"LOAD", 't'}, {"STORE", 't'}, {"INPUT", 't'}, {"OUTPUT", 't'}, {"STOP", 't'}, 
     // Diretivas
@@ -12,16 +12,24 @@ std::map<std::string, char> op_type_map = {
 };
 
 std::map<std::string, int> op_size_map = {
-    // Operações
+    // Instruções
     {"ADD", 2}, {"SUB", 2}, {"MUL", 2}, {"DIV", 2}, {"JMP", 2}, {"JMPN", 2}, {"JMPP", 2},{"JMPZ", 2},
-    {"COPY", 3}, {"LOAD", 2}, {"STORE", 2}, {"INPUT", 2}, {"OUTPUT", 2}, {"STOP", 1 }, 
+    {"COPY", 3}, {"LOAD", 2}, {"STORE", 2}, {"INPUT", 2}, {"OUTPUT", 2}, {"STOP", 1}, 
     // Diretivas
     {"SPACE", 1}, {"CONST", 1}, {"BEGIN", 0}, {"END", 0}, {"EXTERN", 0}, {"PUBLIC", 0}
-    };
+};
+
+std::map<std::string, std::string> op_code_map = {
+    // Operações
+    {"ADD", "1"}, {"SUB", "2"}, {"MUL", "3"}, {"DIV", "4"}, {"JMP", "5"}, {"JMPN", "6"}, {"JMPP", "7"},{"JMPZ", "8"},
+    {"COPY", "9"}, {"LOAD", "10"}, {"STORE", "11"}, {"INPUT", "12"}, {"OUTPUT", "13"}, {"STOP", "14"},
+};
 
 void Translator(fileData * input_file, fileData * outuput_file){
     std::map<std::string, int> * symbol_map = new std::map<std::string, int>();
     std::vector <compilationError> * error_list = new std::vector <compilationError>();
+    std::map<std::string, int> * use_map = new std::map<std::string, int>();
+    std::map<std::string, int> * def_map = new std::map<std::string, int>();
 
     tokenMatrix * input_matrix = new tokenMatrix{ .lines = 0};
 
@@ -35,32 +43,33 @@ void Translator(fileData * input_file, fileData * outuput_file){
     CheckSequentialIdentifiers(input_matrix, error_list);
     CheckOperations(input_matrix, error_list);
 
-
     // Análise semântica
-    CheckSections(input_matrix, error_list);
+    CheckSections(input_matrix, error_list, use_map, def_map);
     CheckSymbols(input_matrix, error_list, symbol_map);
-    for (int i = 0; i < (*error_list).size(); i++){
-        compilationError e = (*error_list)[i];
-        std::cout << e.line << "  " << e.type << "  " << e.message << std::endl;
+    
+    // Gerador de código
+    if (IsModule(input_matrix)){
+        // GenerateModuleProgram(input_matrix, symbol_map, outuput_file);
+        std::cout << "E modulo" << std::endl;
+    } else {
+        GenerateCodeProgram(input_matrix, symbol_map, outuput_file);
+        std::cout << "Codigo montado!" << std::endl;
     }
 
-    std::map<std::string, int>::iterator it = (*symbol_map).begin();
-    while (it != (*symbol_map).end()){
-        std::cout << it->first << " " << it->second << std::endl;
-        it++;
-    }
-
-    // // Gerador de código
-    // if (IsModule(input_matrix)){
-    //     GenerateModuleProgram(input_matrix, symbol_map, outuput_file);
-    // } else {
-    //     GenerateCodeProgram(input_matrix, symbol_map, outuput_file);
+    // for (long unsigned int i = 0; i < (*error_list).size(); i++){
+    //     compilationError e = (*error_list)[i];
+    //     std::cout << e.line << "  " << e.type << "  " << e.message << std::endl;
     // }
 
+    // std::map<std::string, int>::iterator it = (*symbol_map).begin();
+    // while (it != (*symbol_map).end()){
+    //     std::cout << it->first << " " << it->second << std::endl;
+    //     it++;
+    // }
 }
 
 // Analisador semântico
-void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_list){
+void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_list, std::map<std::string, int> * use_map, std::map<std::string, int> * def_map){
     std::vector<std::string> matrix_line;
     std::map<std::string, char>::iterator it;
     std::string op;
@@ -73,7 +82,7 @@ void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_l
     // Procura SECAO TEXTO
     for (i = 0; i < matrix->lines; i++){
         matrix_line = matrix->matrix[i];
-        for (int j = 0; j < matrix_line.size(); j++) {
+        for (long unsigned int j = 0; j < matrix_line.size(); j++) {
             if (matrix_line[j] == "SECAO"){
                 is_section = true;
             } else if (is_section){
@@ -86,6 +95,8 @@ void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_l
                 }
                 break_for = true;
                 break;
+            } else {
+                // Cria tabela de uso e de definicao
             }
         }
         if (break_for)
@@ -95,9 +106,9 @@ void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_l
     break_for = false;
 
     // Confere SECAO TEXTO e procura SECAO DADOS
-    for (i; i < matrix->lines; i++){
+    for (; i < matrix->lines; i++){
         matrix_line = matrix->matrix[i];
-        for (int j = 0; j < matrix_line.size(); j++) {
+        for (long unsigned int j = 0; j < matrix_line.size(); j++) {
             if (matrix_line[j] == "SECAO") 
                 continue;
             if (matrix_line[j] == "DADOS") {
@@ -105,7 +116,7 @@ void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_l
                 break_for = true;
                 break;
             } else {
-                // Confere se não é rótulo, se for ignora
+                // Ignora rótulos e analisa operações
                 if (matrix_line[j][matrix_line[j].size()-1] != ':'){
                     op = matrix_line[j];
                     it = op_type_map.find(op);
@@ -129,9 +140,9 @@ void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_l
     }
 
     // Confere SECAO DADOS
-    for (i; i < matrix->lines; i++){
+    for (; i < matrix->lines; i++){
         matrix_line = matrix->matrix[i];
-        for (int j = 0; j < matrix_line.size(); j++) {
+        for (long unsigned int j = 0; j < matrix_line.size(); j++) {
             // Confere se não é rótulo, se for ignora
             if (matrix_line[j][matrix_line[j].size()-1] != ':'){
                 op = matrix_line[j];
@@ -164,7 +175,7 @@ void CheckSymbols(tokenMatrix * matrix, std::vector<compilationError> * error_li
 
     for (int i = 0; i < matrix->lines; i++){
         matrix_line = matrix->matrix[i];
-        for (int j = 0; j < matrix_line.size(); j++){
+        for (long unsigned int j = 0; j < matrix_line.size(); j++){
             if (matrix_line[j][matrix_line[j].size()-1] == ':'){
                 token = matrix_line[j].substr(0, matrix_line[j].size()-1);
                 it = (*symbol_map).find(token);
@@ -193,29 +204,73 @@ void CheckSymbols(tokenMatrix * matrix, std::vector<compilationError> * error_li
 
 // Sintetizador
 bool IsModule(tokenMatrix * matrix){
-    return true;
+    std::vector<std::string> matrix_line;
+    for (int i = 0; i < matrix->lines; i++){
+        matrix_line = matrix->matrix[i];
+        for (long unsigned int j = 0; j < matrix_line.size(); j++){
+            if (matrix_line[j][matrix_line[j].size()-1] == ':'){
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+    return false;
 }
 
-void GenerateCodeProgram(tokenMatrix * matrix, std::map<std::string, std::string> * symbol_map, fileData * file){
-    std::vector <int> instruction_list;
+void GenerateCodeProgram(tokenMatrix * matrix, std::map<std::string, int> * symbol_map, fileData * file){
+    std::vector<std::string> matrix_line;
+    std::vector <std::string> instruction_list;
+    std::map<std::string, int>::iterator it;
+    std::map<std::string, char>::iterator it_aux;
+    std::string token;
+
+    for (int i = 0; i < matrix->lines; i++){
+        matrix_line = matrix->matrix[i];
+        for (long unsigned int j = 0; j < matrix_line.size(); j++){
+            token = matrix_line[j];
+            it_aux = op_type_map.find(token);
+            if (it_aux != op_type_map.end()){
+                if (it_aux->second == 't'){
+                    instruction_list.push_back(op_code_map[token]);
+                } else if (it_aux->second == 'd'){
+                    if (token == "SPACE")
+                        instruction_list.push_back("0");
+                    else
+                        instruction_list.push_back(matrix_line[++j]);
+                }
+            } else {
+                it = (*symbol_map).find(token);
+                if (it != ((*symbol_map).end())){
+                    instruction_list.push_back(std::to_string(it->second));
+                } else {
+                    instruction_list.push_back("??");
+                }
+            }
+        }
+    }
 
     ConvertCodeToFile(instruction_list, file);
 }
 
-void GenerateModuleProgram(tokenMatrix * matrix, std::map<std::string, std::string> * symbol_map, fileData * file){
-    std::map<std::string, std::string> * use_map = new std::map<std::string, std::string>();
-    std::map<std::string, std::string> * def_map = new std::map<std::string, std::string>();
-    std::vector <int> instruction_list;
+void GenerateModuleProgram(tokenMatrix * matrix, std::map<std::string, int> * symbol_map, std::map<std::string, int> * use_map, std::map<std::string, int> * def_map, fileData * file){
+    std::vector <std::string> instruction_list;
 
     ConvertModuleToFile(instruction_list, use_map, def_map, file);
 
 }
 
 // Conversor
-void ConvertCodeToFile(std::vector <int> instruction_list, fileData * file){
-
+void ConvertCodeToFile(std::vector <std::string> instruction_list, fileData * file){
+    std::string text;
+    for (long unsigned int i = 0; i < instruction_list.size(); i++){
+        text.append(instruction_list[i]);
+        text.append(" ");
+    }
+    text.pop_back();
+    file->content = text;
 }
 
-void ConvertModuleToFile(std::vector <int> instruction_list, std::map<std::string, std::string> * use_map, std::map<std::string, std::string> * def_map, fileData * file){
+void ConvertModuleToFile(std::vector <std::string> instruction_list, std::map<std::string, int> * use_map, std::map<std::string, int> * def_map, fileData * file){
 
 }
