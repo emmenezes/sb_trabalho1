@@ -28,8 +28,7 @@ std::map<std::string, std::string> op_code_map = {
 void Translator(fileData * input_file, fileData * outuput_file){
     std::map<std::string, int> * symbol_map = new std::map<std::string, int>();
     std::vector <compilationError> * error_list = new std::vector <compilationError>();
-    std::map<std::string, int> * use_map = new std::map<std::string, int>();
-    std::map<std::string, int> * def_map = new std::map<std::string, int>();
+    int * init_text = new int();
 
     tokenMatrix * input_matrix = new tokenMatrix{ .lines = 0};
 
@@ -44,32 +43,21 @@ void Translator(fileData * input_file, fileData * outuput_file){
     CheckOperations(input_matrix, error_list);
 
     // Análise semântica
-    CheckSections(input_matrix, error_list, use_map, def_map);
-    CheckSymbols(input_matrix, error_list, symbol_map);
+    CheckSections(input_matrix, error_list, init_text);
+    CheckSymbols(input_matrix, error_list, symbol_map, init_text);
     
     // Gerador de código
     if (IsModule(input_matrix)){
-        // GenerateModuleProgram(input_matrix, symbol_map, outuput_file);
-        std::cout << "E modulo" << std::endl;
+        GenerateModuleProgram(input_matrix, symbol_map, outuput_file, init_text);
+        std::cout << "Modulo montado!" << std::endl;
     } else {
         GenerateCodeProgram(input_matrix, symbol_map, outuput_file);
         std::cout << "Codigo montado!" << std::endl;
     }
-
-    // for (long unsigned int i = 0; i < (*error_list).size(); i++){
-    //     compilationError e = (*error_list)[i];
-    //     std::cout << e.line << "  " << e.type << "  " << e.message << std::endl;
-    // }
-
-    // std::map<std::string, int>::iterator it = (*symbol_map).begin();
-    // while (it != (*symbol_map).end()){
-    //     std::cout << it->first << " " << it->second << std::endl;
-    //     it++;
-    // }
 }
 
 // Analisador semântico
-void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_list, std::map<std::string, int> * use_map, std::map<std::string, int> * def_map){
+void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_list, int * init_text) {
     std::vector<std::string> matrix_line;
     std::map<std::string, char>::iterator it;
     std::string op;
@@ -80,7 +68,7 @@ void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_l
     int i;
 
     // Procura SECAO TEXTO
-    for (i = 0; i < matrix->lines; i++){
+    for (i = 0; i < matrix->lines; i++) {
         matrix_line = matrix->matrix[i];
         for (long unsigned int j = 0; j < matrix_line.size(); j++) {
             if (matrix_line[j] == "SECAO"){
@@ -95,14 +83,13 @@ void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_l
                 }
                 break_for = true;
                 break;
-            } else {
-                // Cria tabela de uso e de definicao
             }
         }
         if (break_for)
             break;
     }
     
+    *init_text = i;
     break_for = false;
 
     // Confere SECAO TEXTO e procura SECAO DADOS
@@ -117,10 +104,10 @@ void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_l
                 break;
             } else {
                 // Ignora rótulos e analisa operações
-                if (matrix_line[j][matrix_line[j].size()-1] != ':'){
+                if (matrix_line[j][matrix_line[j].size()-1] != ':') {
                     op = matrix_line[j];
                     it = op_type_map.find(op);
-                    if (it == op_type_map.end()){
+                    if (it == op_type_map.end()) {
                         error.message = "Operacao " + op + " nao identificada na secao TEXTO";
                         error.line = i;
                         error_list->push_back(error);
@@ -140,19 +127,19 @@ void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_l
     }
 
     // Confere SECAO DADOS
-    for (; i < matrix->lines; i++){
+    for (; i < matrix->lines; i++) {
         matrix_line = matrix->matrix[i];
         for (long unsigned int j = 0; j < matrix_line.size(); j++) {
             // Confere se não é rótulo, se for ignora
-            if (matrix_line[j][matrix_line[j].size()-1] != ':'){
+            if (matrix_line[j][matrix_line[j].size()-1] != ':') {
                 op = matrix_line[j];
                 it = op_type_map.find(op);
-                if (it == op_type_map.end()){
+                if (it == op_type_map.end()) {
                     error.message = "Operacao " + op + " nao identificada na secao DADOS";
                     error.line = i;
                     error_list->push_back(error);
                 } else {
-                    if (it->second != 'd'){
+                    if (it->second != 'd') {
                         error.message = "Operacao " + op + " na secao DADOS";
                         error.line = i;
                         error_list->push_back(error);
@@ -164,7 +151,7 @@ void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_l
     }
 }
 
-void CheckSymbols(tokenMatrix * matrix, std::vector<compilationError> * error_list, std::map<std::string, int> * symbol_map){
+void CheckSymbols(tokenMatrix * matrix, std::vector<compilationError> * error_list, std::map<std::string, int> * symbol_map, int * init_text) {
     std::vector<std::string> matrix_line;
     std::map<std::string, int>::iterator it;
     std::string token;
@@ -173,7 +160,7 @@ void CheckSymbols(tokenMatrix * matrix, std::vector<compilationError> * error_li
     compilationError error;
     error.type = "Semantico";
 
-    for (int i = 0; i < matrix->lines; i++){
+    for (int i = *init_text; i < matrix->lines; i++){
         matrix_line = matrix->matrix[i];
         for (long unsigned int j = 0; j < matrix_line.size(); j++){
             if (matrix_line[j][matrix_line[j].size()-1] == ':'){
@@ -203,12 +190,12 @@ void CheckSymbols(tokenMatrix * matrix, std::vector<compilationError> * error_li
 }
 
 // Sintetizador
-bool IsModule(tokenMatrix * matrix){
+bool IsModule(tokenMatrix * matrix) {
     std::vector<std::string> matrix_line;
-    for (int i = 0; i < matrix->lines; i++){
+    for (int i = 0; i < matrix->lines; i++) {
         matrix_line = matrix->matrix[i];
-        for (long unsigned int j = 0; j < matrix_line.size(); j++){
-            if (matrix_line[j][matrix_line[j].size()-1] == ':'){
+        for (long unsigned int j = 0; j < matrix_line.size(); j++) {
+            if (matrix_line[j][matrix_line[j].size()-1] == ':') {
                 return true;
             } else {
                 return false;
@@ -218,22 +205,22 @@ bool IsModule(tokenMatrix * matrix){
     return false;
 }
 
-void GenerateCodeProgram(tokenMatrix * matrix, std::map<std::string, int> * symbol_map, fileData * file){
+void GenerateCodeProgram(tokenMatrix * matrix, std::map<std::string, int> * symbol_map, fileData * file) {
     std::vector<std::string> matrix_line;
-    std::vector <std::string> instruction_list;
+    std::vector<std::string> instruction_list;
     std::map<std::string, int>::iterator it;
     std::map<std::string, char>::iterator it_aux;
     std::string token;
 
-    for (int i = 0; i < matrix->lines; i++){
+    for (int i = 0; i < matrix->lines; i++) {
         matrix_line = matrix->matrix[i];
-        for (long unsigned int j = 0; j < matrix_line.size(); j++){
+        for (long unsigned int j = 0; j < matrix_line.size(); j++) {
             token = matrix_line[j];
             it_aux = op_type_map.find(token);
             if (it_aux != op_type_map.end()){
                 if (it_aux->second == 't'){
                     instruction_list.push_back(op_code_map[token]);
-                } else if (it_aux->second == 'd'){
+                } else if (it_aux->second == 'd') {
                     if (token == "SPACE")
                         instruction_list.push_back("0");
                     else
@@ -241,7 +228,7 @@ void GenerateCodeProgram(tokenMatrix * matrix, std::map<std::string, int> * symb
                 }
             } else {
                 it = (*symbol_map).find(token);
-                if (it != ((*symbol_map).end())){
+                if (it != ((*symbol_map).end())) {
                     instruction_list.push_back(std::to_string(it->second));
                 } else {
                     instruction_list.push_back("??");
@@ -253,17 +240,77 @@ void GenerateCodeProgram(tokenMatrix * matrix, std::map<std::string, int> * symb
     ConvertCodeToFile(instruction_list, file);
 }
 
-void GenerateModuleProgram(tokenMatrix * matrix, std::map<std::string, int> * symbol_map, std::map<std::string, int> * use_map, std::map<std::string, int> * def_map, fileData * file){
-    std::vector <std::string> instruction_list;
+void GenerateModuleProgram(tokenMatrix * matrix, std::map<std::string, int> * symbol_map, fileData * file, int * init_text) {
+    std::vector<std::vector<std::string>> * use_vector = new std::vector<std::vector<std::string>>();
+    std::map<std::string, int> * def_map = new std::map<std::string, int>();
+    std::map<std::string, int> * use_map = new std::map<std::string, int>();
+    std::map<std::string, int>::iterator it;
+    std::map<std::string, char>::iterator it_char;
+    std::vector<std::string> instruction_list;
+    std::vector<std::string> matrix_line;
+    std::string token;
+    int i = 0;
 
-    ConvertModuleToFile(instruction_list, use_map, def_map, file);
+    // Analisa diretivas antes da SEÇÃO TEXTO
+    for (; i < *init_text; i++) {
+        matrix_line = matrix->matrix[i];
+        for (long unsigned int j = 0; j < matrix_line.size(); j++) {
+            if (matrix_line[j] == "EXTERN")
+                (*use_map)[matrix_line[j-1].substr(0, matrix_line[j-1].size()-1)] = 0;
+            else if (matrix_line[j] == "PUBLIC")
+                (*def_map)[matrix_line[j+1]] = 0;
+        }
+    }
 
+    std::map<std::string, int>::iterator it_aux = (*def_map).begin();
+    while (it_aux != (*def_map).end()){
+        it = (*symbol_map).find(it_aux->first);
+        (*def_map)[it_aux->first] = it->second;
+        it_aux++;
+    }
+
+    // Analisa resto do programa
+    for (; i < matrix->lines; i++) {
+        matrix_line = matrix->matrix[i];
+        for (long unsigned int j = 0; j < matrix_line.size(); j++) {
+            token = matrix_line[j];
+            it_char = op_type_map.find(token);
+            if (it_char != op_type_map.end()){
+                if (it_char->second == 't'){
+                    instruction_list.push_back(op_code_map[token]);
+                } else if (it_char->second == 'd') {
+                    if (token == "SPACE")
+                        instruction_list.push_back("0");
+                    else
+                        instruction_list.push_back(matrix_line[++j]);
+                }
+            } else {
+                it = (*symbol_map).find(token);
+                it_aux = (*def_map).find(token);
+                if ((it != ((*symbol_map).end())) && (it_aux != ((*def_map).end()))) {
+                    instruction_list.push_back(std::to_string(it->second));
+                } else {
+                    it_aux = (*use_map).find(token);
+                    if (it_aux != ((*use_map).end())) {
+                        use_vector->push_back({token, std::to_string(instruction_list.size())});
+                        instruction_list.push_back("0");
+                    } else if (it != ((*symbol_map).end())) {
+                        instruction_list.push_back(std::to_string(it->second));
+                    } else {
+                        instruction_list.push_back("??");
+                    }
+                }
+            }
+        }
+    }
+
+    ConvertModuleToFile(instruction_list, use_vector, def_map, file);
 }
 
 // Conversor
-void ConvertCodeToFile(std::vector <std::string> instruction_list, fileData * file){
+void ConvertCodeToFile(std::vector <std::string> instruction_list, fileData * file) {
     std::string text;
-    for (long unsigned int i = 0; i < instruction_list.size(); i++){
+    for (long unsigned int i = 0; i < instruction_list.size(); i++) {
         text.append(instruction_list[i]);
         text.append(" ");
     }
@@ -271,6 +318,27 @@ void ConvertCodeToFile(std::vector <std::string> instruction_list, fileData * fi
     file->content = text;
 }
 
-void ConvertModuleToFile(std::vector <std::string> instruction_list, std::map<std::string, int> * use_map, std::map<std::string, int> * def_map, fileData * file){
+void ConvertModuleToFile(std::vector <std::string> instruction_list, std::vector<std::vector<std::string>> * use_vector, std::map<std::string, int> * def_map, fileData * file) {
+    std::string text;
+    std::map<std::string, int>::iterator it;
 
+    text.append("TABELA USO\n");
+    for (unsigned long int i = 0; i < (*use_vector).size(); i++)
+        text.append((*use_vector)[i][0] + " " + (*use_vector)[i][1] + "\n");
+    text.append("\n");
+
+    text.append("TABELA DEF\n");
+    it = (*def_map).begin();
+    while (it != (*def_map).end()){
+        text.append(it->first + " " + std::to_string(it->second) + "\n");
+        it++;
+    }
+    text.append("\n");
+
+    for (long unsigned int i = 0; i < instruction_list.size(); i++) {
+        text.append(instruction_list[i]);
+        text.append(" ");
+    }
+    text.pop_back();
+    file->content = text;
 }
