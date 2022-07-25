@@ -16,7 +16,7 @@ void CheckSequentialIdentifiers(tokenMatrix * matrix, std::vector<compilationErr
 
     for (int i = 0; i < matrix->lines; i++){
         matrix_line = matrix->matrix[i];
-        for (int j = 0; j < matrix_line.size(); j++){
+        for (long unsigned int j = 0; j < matrix_line.size(); j++){
             if (matrix_line[j][matrix_line[j].size()-1] == ':'){
                 if (prev_is_symbol){
                     error.message = "Dois ou mais identificadores em sequencia";
@@ -83,6 +83,8 @@ void CheckOperations(tokenMatrix * matrix, std::vector<compilationError> * error
                 error.message = "Operacao COPY nao esta separada por virgulas";
                 error.line = i;
                 error_list->push_back(error);
+            } else {
+                matrix->matrix[i][matrix_line.size()-2] = matrix_line[matrix_line.size()-2].substr(0, matrix_line[matrix_line.size()-2].size()-1);
             }
         }
     }

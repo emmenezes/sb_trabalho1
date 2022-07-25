@@ -10,7 +10,7 @@ void CleanMatrix(tokenMatrix * input_matrix){
     for (int i = 0; i < input_matrix->lines; i++){
         matrix_line = input_matrix->matrix[i];
         clean_line = {};
-        for (int j = 0; j < matrix_line.size(); j++){
+        for (long unsigned int j = 0; j < matrix_line.size(); j++){
             if (matrix_line[j][0] == ';')
                 break;
             clean_line.push_back(matrix_line[j]);
@@ -31,11 +31,11 @@ void LexicCheck(tokenMatrix * input_matrix, std::vector<compilationError> * erro
 
     for (int i = 0; i < input_matrix->lines; i++){
         matrix_line = input_matrix->matrix[i];
-        for (int j = 0; j < matrix_line.size(); j++){
+        for (long unsigned int j = 0; j < matrix_line.size(); j++){
             if (isdigit(matrix_line[j][0])){
                 token = matrix_line[j];
                 is_number = true;
-                for (int k = 0; k < token.size(); k++){
+                for (long unsigned int k = 0; k < token.size(); k++){
                     if (!isdigit(token[k])){
                         is_number = false;
                         break;

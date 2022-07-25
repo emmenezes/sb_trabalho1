@@ -48,9 +48,9 @@ void ProcessIF(tokenMatrix * input_matrix, tokenMatrix * output_matrix, std::map
             output_matrix->matrix.push_back({});            
             continue;
         }
-        for (int j = 0; j < input_line.size(); j++){
+        for (long unsigned int j = 0; j < input_line.size(); j++){
             if (input_line[j][0] == ';'){
-                for (j; j<input_line.size(); j++){
+                for (; j<input_line.size(); j++){
                     output_line.push_back(input_line[j]);    
                 }
                 break;
