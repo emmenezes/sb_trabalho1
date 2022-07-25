@@ -8,6 +8,7 @@
 #include <iostream>
 
 extern std::map<std::string, char> op_type_map;
+extern std::map<std::string, int> op_size_map;
 
 void Translator(fileData * input_file, fileData * outuput_file);
 

@@ -11,6 +11,14 @@ std::map<std::string, char> op_type_map = {
     {"SPACE", 'd'}, {"CONST", 'd'}, {"BEGIN", 'c'}, {"END", 'd'}, {"EXTERN", 'c'}, {"PUBLIC", 'c'}
 };
 
+std::map<std::string, int> op_size_map = {
+    // Operações
+    {"ADD", 2}, {"SUB", 2}, {"MUL", 2}, {"DIV", 2}, {"JMP", 2}, {"JMPN", 2}, {"JMPP", 2},{"JMPZ", 2},
+    {"COPY", 3}, {"LOAD", 2}, {"STORE", 2}, {"INPUT", 2}, {"OUTPUT", 2}, {"STOP", 1 }, 
+    // Diretivas
+    {"SPACE", 1}, {"CONST", 1}, {"BEGIN", 0}, {"END", 0}, {"EXTERN", 0}, {"PUBLIC", 0}
+    };
+
 void Translator(fileData * input_file, fileData * outuput_file){
     std::map<std::string, int> * symbol_map = new std::map<std::string, int>();
     std::vector <compilationError> * error_list = new std::vector <compilationError>();
@@ -34,6 +42,12 @@ void Translator(fileData * input_file, fileData * outuput_file){
     for (int i = 0; i < (*error_list).size(); i++){
         compilationError e = (*error_list)[i];
         std::cout << e.line << "  " << e.type << "  " << e.message << std::endl;
+    }
+
+    std::map<std::string, int>::iterator it = (*symbol_map).begin();
+    while (it != (*symbol_map).end()){
+        std::cout << it->first << " " << it->second << std::endl;
+        it++;
     }
 
     // // Gerador de código
@@ -164,9 +178,9 @@ void CheckSymbols(tokenMatrix * matrix, std::vector<compilationError> * error_li
                 symbol_exists = true;
             } else {
                 token = matrix_line[j];
-                it = op_args_map.find(token);
-                if (it != op_args_map.end()) {
-                    pos_counter += it->second + 1;
+                it = op_size_map.find(token);
+                if (it != op_size_map.end()) {
+                    pos_counter += it->second;
                 }
                 break;
             }
