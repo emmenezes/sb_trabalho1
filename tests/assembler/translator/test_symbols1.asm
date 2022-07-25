@@ -1,12 +1,9 @@
 secao texto
-input a
-input b
-load a
+a: load a
 add b
 store c
 output c
-stop
 secao dados
-a: space
-b: space
+a: const 1
+b: const 2
 c: space

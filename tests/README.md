@@ -39,6 +39,19 @@ Obs:
 | test_quantop4     | X | Sintático     | BEGIN com argumento | CheckOperations |
 | test_quantop5     | X | Sintático     | Identificador e COPY não separado por vírgula | CheckOperations |
 | test_quantop6     | X | Sintático     | Identificador não separado por dois pontos | CheckOperations |
+| test_section1     | X | Semântico     | Falta da seção texto | CheckSections |
+| test_section2     | X | Semântico     | Identificador sem dois pontos, operação não identificada na seção texto | CheckSections |
+| test_section3     | X | Semântico     | Operação CONST na seção texto | CheckSections |
+| test_section4     | X | Semântico     | Operação SPACE na seção texto | CheckSections |
+| test_section5     | X | Semântico     | Identificador sem dois pontos, operação não identificada na seção dados | CheckSections |
+| test_section6     | X | Semântico     | Operação ADD na seção dados | CheckSections |
+| test_section7     | X | Semântico     | Operação COPY na seção dados | CheckSections |
+| test_section8     | X | Semântico     | Operação EXTERN na seção texto | CheckSections |
+| test_symbols1     | X | Semântico     | Identificadores repetido 2 vezes | CheckSymbols |
+| test_symbols2     | X | Semântico     | Identificadores repetido 3 vezes | CheckSymbols |
+| test_symbols3     | X | Semântico     | Dois identificadores repetidos | CheckSymbols |
+| test_symbols     | - | Semântico     |  | CheckSymbols |
+
 
 
 ## Ligador
@@ -60,9 +73,9 @@ Obs:
 | Tipo      | Resolvido | Erro  |
 |-----------|-----------|-------|
 | Léxico    | OK | Tokens inválidos |
-| Sintático | | Instruções com a quantidade de operando errado |
-| Sintático | | Dois identificadores na mesma linha |
-| Semântico | | Falta da seção texto |
-| Semântico | | Instruções ou diretivas nas seções erradas |
+| Sintático | OK | Instruções com a quantidade de operando errado |
+| Sintático | OK | Dois identificadores na mesma linha |
+| Semântico | OK | Falta da seção texto |
+| Semântico | OK | Instruções ou diretivas nas seções erradas |
 | Semântico | | Declarações de rótulos ausentes |
 | Semântico | | Declarações ou rótulos repetidos |

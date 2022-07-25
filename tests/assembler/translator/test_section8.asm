@@ -1,12 +1,10 @@
 secao texto
-input a
-input b
+k: EXTERN
 load a
 add b
 store c
 output c
-stop
 secao dados
-a: space
-b: space
+a: const 1
+b: const 2
 c: space
