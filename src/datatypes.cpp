@@ -15,6 +15,21 @@ void ConvertFileToMatrix(fileData * input_file, tokenMatrix * input_matrix){
     input_matrix->lines = lines;
 }
 
+void ConvertFileToMatrixCaps(fileData * input_file, tokenMatrix * input_matrix){
+    int lines = 0;
+    std::string temp;
+    std::vector<std::string> input_line;
+    std::vector<std::string> matrix_line;
+
+    input_line = Split(input_file->content, '\n');
+    for (long unsigned int i = 0; i<input_line.size(); i++){
+        matrix_line = Split(input_line[i], ' ');
+        input_matrix->matrix.push_back(matrix_line);
+        lines++;
+    }
+    input_matrix->lines = lines;
+}
+
 void ConvertMatrixToFile(tokenMatrix * output_matrix, fileData * output_file){
     std::string text;
     std::vector <std::string> matrix_line;

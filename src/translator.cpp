@@ -32,7 +32,7 @@ void Translator(fileData * input_file, fileData * outuput_file){
 
     tokenMatrix * input_matrix = new tokenMatrix{ .lines = 0};
 
-    ConvertFileToMatrix(input_file, input_matrix);
+    ConvertFileToMatrixCaps(input_file, input_matrix);
     
     // Scanner
     CleanMatrix(input_matrix);
