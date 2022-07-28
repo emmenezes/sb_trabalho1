@@ -17,17 +17,22 @@ void PreProcessing(fileData * input_file, fileData * outuput_file){
 
 bool FindEQU(tokenMatrix * input_matrix, std::map<std::string, std::string> * equ_map){
     std::vector<std::string> line;
+    std::string id;
     line = input_matrix->matrix[0];
     bool equ_exists = false;
     for (int i = 0; i < input_matrix->lines; i++){
         line = input_matrix->matrix[i];
         if (line.empty())
             continue;
-        if (line[1] != "EQU")
+        id = line[1];
+        std::transform(id.begin(), id.end(), id.begin(), ::toupper);
+        if (id != "EQU")
             break;
         if (line[0][0] == ';')
             continue;
-        (*equ_map)[line[0].substr(0, line[0].size()-1)] = line[2];
+        id = line[0].substr(0, line[0].size()-1);
+        std::transform(id.begin(), id.end(), id.begin(), ::toupper);
+        (*equ_map)[id] = line[2];
         equ_exists = true;
     }
     if (equ_exists)
@@ -40,11 +45,14 @@ void ProcessIF(tokenMatrix * input_matrix, tokenMatrix * output_matrix, std::map
     std::vector<std::string> input_line;
     std::vector<std::string> output_line;
     std::map<std::string, std::string>::iterator it;
+    std::string id;
 
     for (int i = 0; i < input_matrix->lines; i++){
         input_line = input_matrix->matrix[i];
         output_line = {};
-        if (input_line[1] == "EQU"){
+        id = input_line[1];
+        std::transform(id.begin(), id.end(), id.begin(), ::toupper);
+        if (id == "EQU"){
             output_matrix->matrix.push_back({});            
             continue;
         }
@@ -55,7 +63,9 @@ void ProcessIF(tokenMatrix * input_matrix, tokenMatrix * output_matrix, std::map
                 }
                 break;
             }
-            it = (*equ_map).find(input_line[j]);
+            id = input_line[j];
+            std::transform(id.begin(), id.end(), id.begin(), ::toupper);
+            it = (*equ_map).find(id);
             if (it == (*equ_map).end()){
                 output_line.push_back(input_line[j]);
             } else {

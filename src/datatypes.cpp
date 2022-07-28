@@ -6,9 +6,9 @@ void ConvertFileToMatrix(fileData * input_file, tokenMatrix * input_matrix){
     std::vector<std::string> input_line;
     std::vector<std::string> matrix_line;
 
-    input_line = Split(input_file->content, '\n');
+    input_line = CommonSplit(input_file->content, '\n');
     for (long unsigned int i = 0; i<input_line.size(); i++){
-        matrix_line = Split(input_line[i], ' ');
+        matrix_line = CommonSplit(input_line[i], ' ');
         input_matrix->matrix.push_back(matrix_line);
         lines++;
     }
@@ -41,6 +41,16 @@ std::vector <std::string> Split(std::string text, char separator){
     std::vector <std::string> result;
     while(getline(ss, str, separator)){
         std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+        result.push_back(str);
+    }
+    return result;
+}
+
+std::vector <std::string> CommonSplit(std::string text, char separator){
+    std::string str;
+    std::stringstream ss(text);
+    std::vector <std::string> result;
+    while(getline(ss, str, separator)){
         result.push_back(str);
     }
     return result;
