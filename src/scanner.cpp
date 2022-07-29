@@ -46,7 +46,7 @@ void LexicCheck(tokenMatrix * input_matrix, std::vector<compilationError> * erro
                     error_list->push_back(error);
                 }
             }
-            if (matrix_line[j].find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_") != std::string::npos){
+            if (matrix_line[j].find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_:") != std::string::npos){
                 error.line = i;
                 error_list->push_back(error);
             }

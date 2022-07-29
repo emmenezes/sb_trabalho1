@@ -54,9 +54,18 @@ std::vector <std::string> Split(std::string text, char separator){
     std::string str;
     std::stringstream ss(text);
     std::vector <std::string> result;
+    std::size_t id;
     while(getline(ss, str, separator)){
         std::transform(str.begin(), str.end(), str.begin(), ::toupper);
-        result.push_back(str);
+        if (separator == ' '){
+            id = str.find_first_not_of(' ');
+            if (id != std::string::npos){
+                str.substr(id, str.size());
+                result.push_back(str);
+            }
+        } else {
+            result.push_back(str);
+        }
     }
     return result;
 }
