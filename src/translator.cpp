@@ -46,6 +46,12 @@ void Translator(fileData * input_file, fileData * outuput_file){
     CheckSections(input_matrix, error_list, init_text);
     CheckSymbols(input_matrix, error_list, symbol_map, init_text);
     
+    // Imprime erros
+    for (long unsigned int i = 0; i < (*error_list).size(); i++){
+        compilationError e = (*error_list)[i];
+        std::cout << e.line << "  " << e.type << "  " << e.message << std::endl;
+    }
+
     // Gerador de código
     if (IsModule(input_matrix)){
         GenerateModuleProgram(input_matrix, symbol_map, outuput_file, init_text);
