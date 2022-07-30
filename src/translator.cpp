@@ -98,6 +98,12 @@ void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_l
     *init_text = i;
     break_for = false;
 
+    if (i == matrix->lines){
+        error.message = "Falta da secao texto";
+        error.line = 0;
+        error_list->push_back(error);
+    }
+
     // Confere SECAO TEXTO e procura SECAO DADOS
     for (; i < matrix->lines; i++){
         matrix_line = matrix->matrix[i];
@@ -287,6 +293,8 @@ void GenerateModuleProgram(tokenMatrix * matrix, std::map<std::string, int> * sy
                 } else if (it_char->second == 'd') {
                     if (token == "SPACE")
                         instruction_list.push_back("0");
+                    else if (token == "END")
+                        continue;
                     else
                         instruction_list.push_back(matrix_line[++j]);
                 }
