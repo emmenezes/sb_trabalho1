@@ -171,6 +171,7 @@ void CheckSymbols(tokenMatrix * matrix, std::vector<compilationError> * error_li
     std::string token;
     int pos_counter = 0;
     bool symbol_exists = false;
+    bool is_number = false;
     compilationError error;
     error.type = "Semantico";
     int i = 0;
@@ -220,7 +221,12 @@ void CheckSymbols(tokenMatrix * matrix, std::vector<compilationError> * error_li
             it = op_size_map.find(token);
             if (it == op_size_map.end()) {
                 it = (*symbol_map).find(token);
-                if (it == (*symbol_map).end()){
+                is_number = true;
+                for (char const &c : token) {
+                    if (std::isdigit(c) == 0) 
+                        is_number = false;
+                }
+                if ((it == (*symbol_map).end()) && !is_number){
                     error.line = i;
                     error.message = "Declaracao ou rotulo " + token + " nao identificado";
                     error_list->push_back(error);
