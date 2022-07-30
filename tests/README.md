@@ -19,12 +19,22 @@ Para fazer:
 #### Geral ```assembler/noerror```
 | Nome do arquivo   | X | Descrição |
 |-------------------|---|-----------|
+| test_binary | O | Calcula binário do valor de entrada  |
+| test_equ1_p | O | Resultado do pré-processamento de equ1 |
+| test_equ2_p | O | Resultado do pré-processamento de equ2 |
+| test_mod_div_A | O | Faz divisão entre dois números, chama B para conferir se o divisor é 0 |
+| test_mod_div_B | O | Confere se o divisoe de A é 0 |
+| test_mod_fat_A | O | Confere se o número fatorial inicial é zero, chama B |
+| test_mod_fat_B | O | Faz fatorial |
+| test_mod_order3_A | O | Recebe 3 números e manda para B |
+| test_mod_order3_A | O | Ordena e imprime os três números |
+| test_mod_par_A | O | Recebe um número e manda para B |
+| test_mod_par_A | O | Define se o número é par ou não e retorna para A |
+| test_mod_stop_A | O | Chama B |
+| test_mod_stop_B | O | Faz STOP |
 | test_sumab1 | O | Soma dois identificadores a + b |
 | test_sumab2 | O | Soma dois identificadores a + b e permite refazer soma |
-| test_binary | O | Calcula binário do valor de entrada  |
-| test_fibonacci | - |  |
-| test_ |  |  |
-| test_ |  |  |
+
 
 Obs:
 * Esses testes só podem ser marcados como feitos após o assembler estar completo
