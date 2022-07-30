@@ -173,8 +173,17 @@ void CheckSymbols(tokenMatrix * matrix, std::vector<compilationError> * error_li
     bool symbol_exists = false;
     compilationError error;
     error.type = "Semantico";
+    int i = 0;
 
-    for (int i = *init_text; i < matrix->lines; i++){
+    for (; i < *init_text; i++) {
+        matrix_line = matrix->matrix[i];
+        for (long unsigned int j = 0; j < matrix_line.size(); j++) {
+            if (matrix_line[j] == "EXTERN" || matrix_line[j] == "BEGIN")
+                (*symbol_map)[matrix_line[j-1].substr(0, matrix_line[j-1].size()-1)] = 0;
+        }
+    }
+
+    for (; i < matrix->lines; i++){
         matrix_line = matrix->matrix[i];
         for (long unsigned int j = 0; j < matrix_line.size(); j++){
             if (matrix_line[j][matrix_line[j].size()-1] == ':'){
@@ -201,6 +210,25 @@ void CheckSymbols(tokenMatrix * matrix, std::vector<compilationError> * error_li
             matrix->matrix[i].erase(matrix->matrix[i].begin());
         symbol_exists = false;
     }
+
+    for (i = 0; i < matrix->lines; i++){
+        matrix_line = matrix->matrix[i];
+        for (long unsigned int j = 0; j < matrix_line.size(); j++){
+            if (matrix_line[j][matrix_line[j].size()-1] == ':')
+                continue;
+            token = matrix_line[j];
+            it = op_size_map.find(token);
+            if (it == op_size_map.end()) {
+                it = (*symbol_map).find(token);
+                if (it == (*symbol_map).end()){
+                    error.line = i;
+                    error.message = "Declaracao ou rotulo " + token + " nao identificado";
+                    error_list->push_back(error);
+                }
+            }
+        }
+    }
+    
 }
 
 // Sintetizador
