@@ -124,6 +124,8 @@ void CheckSections(tokenMatrix * matrix, std::vector<compilationError> * error_l
                         error.line = i;
                         error_list->push_back(error);
                     } else {
+                        if (op == "END")
+                            continue;
                         if (it->second != 't'){
                             error.message = "Operacao " + op + " na secao TEXTO";
                             error.line = i;
