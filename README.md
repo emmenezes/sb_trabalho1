@@ -1,7 +1,7 @@
 # Trabalho Prático de Software Básico - 2022/1 - UnB
 
 Equipe:
-* Daniel Sanchez Trujillo- 18/0039229
+* Daniel Sanchez Trujillo - 18/0039229
 * Eduarda Costa de Menezes, Emme - 17/0032353
 
 
@@ -12,8 +12,10 @@ Equipe:
 ### Para pré-processamento
 
 ```
-./montador -p meuprograma.asm saida.obj
+./montador -o meuprograma.asm saida.obj
 ```
+
+O resultado do pré-processamento é apenas o arquivo original com as diretivas pré-processadas. Não é realizada a tradução do código.
 
 ### Para tradução do código
 
@@ -24,5 +26,7 @@ Equipe:
 ## Como usar o ligador
 
 ```
-./ligador arquivo.o arquivo2.o
+./ligador arquivo.obj arquivo2.obj
 ```
+
+A saída padrão do ligador é o arquivo *TODO*.
