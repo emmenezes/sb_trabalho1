@@ -27,7 +27,6 @@ void LexicCheck(tokenMatrix * input_matrix, std::vector<compilationError> * erro
     bool is_number = true;
     compilationError error;
     error.type = "Lexico";
-    error.message = "Token invalido";
 
     for (int i = 0; i < input_matrix->lines; i++){
         matrix_line = input_matrix->matrix[i];
@@ -37,17 +36,25 @@ void LexicCheck(tokenMatrix * input_matrix, std::vector<compilationError> * erro
                 is_number = true;
                 for (long unsigned int k = 0; k < token.size(); k++){
                     if (!isdigit(token[k])){
-                        is_number = false;
-                        break;
+                        if (k == 1 && token[k] == 'X'){
+                            int number = (int)std::strtol(token.c_str(), NULL, 0);
+                            input_matrix->matrix[i][j] = std::to_string(number);
+                            break;
+                        } else {
+                            is_number = false;
+                            break;
+                        }
                     }
                 }
                 if (!is_number){
                     error.line = i;
+                    error.message = "Token \'" + token + "\' invalido";
                     error_list->push_back(error);
                 }
             }
             if (matrix_line[j].find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_:,") != std::string::npos){
                 error.line = i;
+                error.message = "Token \'" + token + "\' invalido";
                 error_list->push_back(error);
             }
         }
