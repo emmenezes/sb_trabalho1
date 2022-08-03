@@ -72,9 +72,11 @@ Obs:
 
 ### Testes sem erros
 
-| Programa | Processamento | Tipo | Entrada |
-|-|-|-|-|
-| | | | |
+| Programa | Tipo | Saida |
+|-|-|-|
+|test_binary | 1 | OK |
+|test_sumab1 | 1 | OK |
+|test_mod_div| 2 | OK |
 
 # Notação
 
