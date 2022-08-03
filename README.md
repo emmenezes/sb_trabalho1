@@ -4,10 +4,16 @@ Equipe:
 * Daniel Erick Sanchez Trujillo - 18/0039229
 * Eduarda Costa de Menezes, Emme - 17/0032353
 
+Observação: os programas foram feitos para linux, mas o montador foi feito em C++ e o ligador em C. Na pasta de testes, há outro README explicando alguns testes que foram elaborados e onde estão localizados.
 
 ## Como compilar
 
 ## Como usar o montador
+
+Para montar o programa, é preciso digitar:
+```
+g++ montador.cpp src/*.cpp -o montador
+```
 
 ### Para pré-processamento
 
