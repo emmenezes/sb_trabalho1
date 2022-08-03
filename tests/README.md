@@ -74,9 +74,13 @@ Obs:
 
 | Programa | Tipo | Saida |
 |-|-|-|
-|test_binary | 1 | OK |
-|test_sumab1 | 1 | OK |
-|test_mod_div| 2 | OK |
+| test_binary | 1 | OK |
+| test_sumab1 | 1 | OK |
+| test_mod_div | 2 | OK |
+| test_mod_order3 | 2 | OK |
+| test_mod_par | 2 | OK |
+| test_mod_stop | 2 | OK |
+| test_sumab1 | 2 | OK |
 
 # Notação
 
