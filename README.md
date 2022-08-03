@@ -12,7 +12,7 @@ Observação: os programas foram feitos para linux, mas o montador foi feito em 
 
 Para montar o programa, é preciso digitar:
 ```
-g++ montador.cpp src/*.cpp -o montador
+g++ montador.cpp src/*.cpp -o montador -std=c++11
 ```
 
 ### Para pré-processamento
