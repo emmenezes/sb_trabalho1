@@ -32,7 +32,7 @@ O resultado do pré-processamento é apenas o arquivo original com as diretivas 
 A contagem de linhas para identificação de erro começa da linha 0.
 
 ## Como usar o ligador
-Utiliza as saidas do montador(.obj) e liga os modulos.
+Utiliza as saidas do montador(.obj) e liga os modulos. Para montar o programa, é preciso digitar:
 ```
 gcc -o ligador ligador.c
 ```
