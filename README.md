@@ -36,9 +36,9 @@ Utiliza as saidas do montador(.obj) e liga os modulos. Para montar o programa, �
 ```
 gcc -o ligador ligador.c
 ```
-Executa e gera o programa ligado.
+Executa e gera o programa ligado com as entradas dos arquivos objeto.
 ```
-./ligador arquivo.obj arquivo2.obj
+./ligador arquivo1.obj arquivo2.obj
 ```
 
 A saída padrão do ligador é o arquivo *TODO*.
